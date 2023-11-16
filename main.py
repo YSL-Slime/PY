@@ -1,20 +1,62 @@
 import random
-COLS = 6
-ROWS = 7
+COLS = 3
+ROWS = 3
 LINES_MAX = 3
 BET_MIN = 1
 BET_MAX = 100
 
 colors = {'R', 'B', 'G', '7', 'C', 'X', 'T'}
 
+vals = {
+    'R' : 2, 
+    'B' : 4,
+    'G' : 5,
+    '7' : 7, 
+    'C' : 1,
+    'X' : 3, 
+    'T' : 1
+}
+
+def winning(r, bet, lines, vals):
+    won = 0
+    wl = []
+    for line in range(lines):
+        s = r[0][line]
+        for c in r:
+            sc = c[line]
+            if s != sc:
+              break
+        else:
+            won += vals[s] * bet
+            wl.append(line + 1)
+    return won, wl
+          
 def spin(r, c, colors):
-    display = []
-    for _ in range(r):
+    sy = []
+    for s in colors:
+        sy.append(s)
+    row = []
+    for _ in range(c):
         column = []
-        for _ in range(c):
-            column.append('X')
-        display.append(column)
-    print(display)
+        csy = sy[:]
+        for _ in range(r):
+            v = random.choice(csy)
+            column.append(v)
+            csy.remove(v)
+        row.append(column)
+    
+    return row
+
+def display(r):
+    print("---------")
+    for p in range(len(r[0])):
+        for i, c in enumerate(r):
+            if i != len(r) - 1:
+                print(c[p], end=" | ")
+            else:
+                    print(c[p], end="")
+        print()
+    print("---------")
 
 def deposit():
     while True:
@@ -56,14 +98,29 @@ def bet():
     return amount
             
 balance = deposit()
-lines = betingLines()
+game = True
+while game:
+    lines = betingLines()
 
-while True:
-    bets = bet()
-    if bets * lines > balance:
-        print(f"Not enough facilities for the bet. Balance: {balance}")
-    else:
-        break
+    while True:
+        bets = bet()
+        if bets * lines > balance:
+            print(f"Not enough facilities for the bet. Balance: {balance}")
+        else:
+            break
+    balance -= bets * lines
+    print(f"The bet is {bets} for {lines} lines. Total bet: {bets * lines}")
+    tt = spin(ROWS, COLS, colors)
+    display(tt)
+    won, onl = winning(tt, bets, lines, vals)
+    print(f"You won ${won} for line/s", *onl)
     
-print(f"The bet is {bets} for {lines} lines. Total bet: {bets * lines}")
-spin(ROWS, COLS, colors)
+    again = input("Do you want to: Play again (p), Add to your balance (b), or Quit (q)")
+    
+    match again:
+        case 'p':
+            continue
+        case 'b':
+            balance += deposit()
+        case 'q':
+            game = False
