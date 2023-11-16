@@ -1,4 +1,5 @@
 import random
+
 COLS = 3
 ROWS = 5
 LINES_MAX = 3
@@ -132,3 +133,4 @@ while game:
                     break
         case 'q':
             game = False
+            
