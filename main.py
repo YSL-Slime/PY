@@ -1,6 +1,6 @@
 import random
 COLS = 3
-ROWS = 3
+ROWS = 5
 LINES_MAX = 3
 BET_MIN = 1
 BET_MAX = 100
@@ -8,13 +8,13 @@ BET_MAX = 100
 colors = {'R', 'B', 'G', '7', 'C', 'X', 'T'}
 
 vals = {
-    'R' : 2, 
-    'B' : 4,
-    'G' : 5,
-    '7' : 7, 
-    'C' : 1,
+    'R' : 2 ** 3, 
+    'B' : 3 ** 2,
+    'G' : 3 ** 3,
+    '7' : 7 ** 3, 
+    'C' : 2,
     'X' : 3, 
-    'T' : 1
+    'T' : 2 ** 2
 }
 
 def winning(r, bet, lines, vals):
@@ -98,16 +98,15 @@ def bet():
     return amount
             
 balance = deposit()
+lines = betingLines()
+while True:
+    bets = bet()
+    if bets * lines > balance:
+        print(f"Not enough facilities for the bet. Balance: {balance}")
+    else:
+        break
 game = True
 while game:
-    lines = betingLines()
-
-    while True:
-        bets = bet()
-        if bets * lines > balance:
-            print(f"Not enough facilities for the bet. Balance: {balance}")
-        else:
-            break
     balance -= bets * lines
     print(f"The bet is {bets} for {lines} lines. Total bet: {bets * lines}")
     tt = spin(ROWS, COLS, colors)
@@ -115,12 +114,21 @@ while game:
     won, onl = winning(tt, bets, lines, vals)
     print(f"You won ${won} for line/s", *onl)
     
-    again = input("Do you want to: Play again (p), Add to your balance (b), or Quit (q)")
+    again = input("Do you want to: Play again (Enter), Add to your balance (a), Change lins (l), Change bet(b), or Quit (q)")
     
     match again:
-        case 'p':
+        case '':
             continue
-        case 'b':
+        case 'a':
             balance += deposit()
+        case 'l':
+            lines = betingLines()
+        case 'b':
+            while True:
+                bets = bet()
+                if bets * lines > balance:
+                    print(f"Not enough facilities for the bet. Balance: {balance}")
+                else:
+                    break
         case 'q':
             game = False
